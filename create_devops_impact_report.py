@@ -190,9 +190,14 @@ def create_autodeploy_dashboard():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auto-Deploy Impact Dashboard</title>
+    <title>Auto-Deploy Impact Report</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        @page {{
+            size: A4;
+            margin: 2cm 1.5cm;
+        }}
+        
         * {{
             margin: 0;
             padding: 0;
@@ -200,355 +205,296 @@ def create_autodeploy_dashboard():
         }}
         
         body {{
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 60px 20px 20px 20px; /* Top padding for fixed banner */
-        }}
-        
-        .container {{
+            font-family: Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.4;
+            color: #000;
+            background: #fff;
             max-width: 1400px;
             margin: 0 auto;
+            padding: 2cm;
         }}
         
-        .header {{
-            text-align: center;
-            color: white;
-            margin-bottom: 30px;
+        h1 {{
+            font-size: 28pt;
+            font-weight: bold;
+            margin-bottom: 12pt;
+            text-align: left;
+            border-bottom: 3pt solid #000;
+            padding-bottom: 12pt;
         }}
         
-        .logo-container {{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
+        h2 {{
+            font-size: 16pt;
+            font-weight: bold;
+            margin-top: 24pt;
+            margin-bottom: 12pt;
+            text-transform: uppercase;
         }}
         
-        .logo {{
-            height: 60px;
-            width: auto;
+        h3 {{
+            font-size: 13pt;
+            font-weight: bold;
+            margin-top: 16pt;
+            margin-bottom: 8pt;
         }}
         
-        .header h1 {{
-            font-size: 2.5rem;
-            margin: 0;
+        p {{
+            margin-bottom: 10pt;
         }}
         
-        .header p {{
-            font-size: 1.2rem;
-            opacity: 0.9;
-            line-height: 1.5;
-            max-width: 800px;
-            margin: 0 auto;
+        .header-subtitle {{
+            font-size: 12pt;
+            margin-bottom: 20pt;
+            line-height: 1.6;
         }}
         
-        .author-banner {{
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 8px 20px;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            font-size: 0.85rem;
-            text-align: center;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
-        }}
-        
-        .author-banner p {{
-            margin: 0;
-            opacity: 0.9;
-        }}
-        
-        .author-banner a {{
-            color: #84fab0;
-            text-decoration: none;
-        }}
-        
-        .author-banner a:hover {{
-            text-decoration: underline;
-        }}
-        
-        body {{
-            padding-top: 40px; /* Account for fixed banner */
+        .focus-box {{
+            border: 2pt solid #000;
+            padding: 16pt;
+            margin: 20pt 0;
+            background: #f9f9f9;
         }}
         
         .metrics-grid {{
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20pt;
+            margin: 20pt 0;
         }}
         
         .metric-card {{
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
+            border: 1pt solid #000;
+            padding: 16pt;
+            background: #fff;
         }}
         
         .metric-card h3 {{
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-            text-align: center;
+            margin-top: 0;
+            margin-bottom: 12pt;
+            font-size: 12pt;
         }}
         
-        .cost-savings-card {{
-            background: linear-gradient(135deg, #ffd93d 0%, #ff6b6b 100%);
-            color: white;
+        .metric-value {{
+            font-size: 32pt;
+            font-weight: bold;
             text-align: center;
+            margin: 12pt 0;
         }}
         
-        .cost-savings-card h3,
-        .cost-savings-card .improvement-value,
-        .cost-savings-card .improvement-desc {{
-            color: white !important;
+        .metric-label {{
+            text-align: center;
+            font-size: 10pt;
+            color: #666;
         }}
         
         .before-after {{
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            align-items: center;
+            gap: 12pt;
         }}
         
-        .metric-item {{
+        .before, .after {{
+            border: 1pt solid #000;
+            padding: 12pt;
             text-align: center;
-            padding: 15px;
-            border-radius: 10px;
         }}
         
         .before {{
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            background: #f5f5f5;
         }}
         
         .after {{
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            background: #fff;
         }}
         
-        .metric-value {{
-            font-size: 2rem;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 5px;
+        .chart-container {{
+            margin: 24pt 0;
+            page-break-inside: avoid;
         }}
         
-        .metric-label {{
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 3px;
+        .chart-wrapper {{
+            border: 1pt solid #000;
+            padding: 16pt;
+            background: #fff;
         }}
         
-        .improvement-card {{
-            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-            color: white;
-            text-align: center;
-        }}
-        
-        .improvement-value {{
-            font-size: 3rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }}
-
-        .improvement-value2 {{
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }}
-        
-        .improvement-desc {{
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }}
-        
-        .charts-grid {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }}
-        
-        .chart-card {{
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        }}
-        
-        .chart-card h3 {{
-            color: #333;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 1.3rem;
-        }}
-        
-        .autodeploy-marker {{
-            position: absolute;
-            background: red;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.8rem;
-            transform: rotate(-15deg);
+        .author-info {{
+            border-top: 2pt solid #000;
+            padding-top: 16pt;
+            margin-top: 24pt;
+            font-size: 10pt;
         }}
         
         .summary {{
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 2pt solid #000;
+            padding: 20pt;
+            margin: 24pt 0;
+            background: #f9f9f9;
         }}
         
         .summary h2 {{
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 2rem;
+            margin-top: 0;
         }}
         
-        .summary p {{
-            color: #666;
-            font-size: 1.1rem;
-            line-height: 1.6;
-            max-width: 800px;
-            margin: 0 auto;
-        }}
-        
-        .highlight {{
-            color: #86f2bd;
-            font-weight: bold;
+        /* Print-specific styles */
+        @media print {{
+            body {{
+                margin: 0;
+                padding: 0;
+                max-width: none;
+            }}
+            
+            * {{
+                -webkit-print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }}
+            
+            .chart-container {{
+                page-break-inside: avoid;
+            }}
+            
+            h2 {{
+                page-break-after: avoid;
+            }}
         }}
     </style>
 </head>
 <body>
-    <!-- Author info banner -->
-    <div class="author-banner">
-        <p>Work by <strong>Antoine ROUGEOT</strong> (Tony Engineering OÜ) | LinkedIn: <a href="https://www.linkedin.com/in/antoinerougeot/" target="_blank">antoinerougeot</a> | Source: <a href="https://github.com/Tony-Engineering-OU/devops-impact-report" target="_blank">GitHub</a></p>
+    <h1>DevOps Best Practices Impact Report</h1>
+    <div class="header-subtitle">
+        <p>Measuring the impact of DevOps best practices implementation showing both operational improvements and financial impact. Feature environments setup followed by continuous deployment to production (Auto-Deploy) on <strong>12 December 2023</strong> were a game changer in the Software Development Lifecycle.</p>
     </div>
     
-    <div class="container">
-        <div class="header">
-            <div class="logo-container">
-                <img src="tonyengineering.png" alt="Tony Engineering" class="logo">
-                <h1>DevOps Best Practices Impact Report</h1>
-            </div>
-            <p>Measuring the impact of <strong>DevOps best practices</strong> implementation for a client showing both <strong style="color: #86f2bd;">operational improvements</strong> and <strong style="color: #ffd93d;">financial impact</strong>. <strong style="color: #86f2bd;">Feature environments</strong> setup followed by <strong style="color: #86f2bd;">continuous deployment</strong> to production (<strong>Auto-Deploy</strong>) on <strong style="color: #86f2bd;">12 December 2023</strong> were a <strong>game changer</strong> in the Software Development Lifecycle.</p>
-            <p>This also showcases the importance of a strong <strong>automated testing culture</strong> and constant <strong>costs management optimization</strong>.</p>
-            <p>This transformation was conducted following <strong><a href="https://12factor.net/" target="_blank" style="color: #86f2bd; text-decoration: none;">12-Factor App methodology</a></strong> and <strong><a href="https://www.prisma.io/dataguide/types/relational/expand-and-contract-pattern#what-is-the-expand-and-contract-pattern" target="_blank" style="color: #86f2bd; text-decoration: none;">Expand/Contract patterns</a></strong> to minimize incidents (<strong style="color: #86f2bd;">uptime > 99%</strong> for the period 2022-2025).</p>        </div>
-        <br>
+    <div class="focus-box">
+        <h3>Key Transformation</h3>
+        <p>This transformation was conducted following <strong>12-Factor App methodology</strong> and <strong>Expand/Contract patterns</strong> to minimize incidents (uptime > 99% for period 2022-2025).</p>
+    </div>
 
-        <div class="metrics-grid">
-                <div class="metric-card cost-savings-card">
-                    <h3>💰 Total estimated savings for devs and data scientists</h3>
-                    <div class="improvement-value" id="total-savings">-</div>
-                    <div class="improvement-value2" id="business-days-saved">-</div>
-                    <div class="improvement-desc">For period 2024-2025. <a href="https://github.com/Tony-Engineering-OU/devops-impact-report/blob/main/cost_savings_calculator.py"  target="_blank" style="color: #ffd93d; text-decoration: none;">Calculation details</a>.</div>
-                </div>
-            </div>
+    <h2>Financial Impact</h2>
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <h3>Total Estimated Savings</h3>
+            <div class="metric-value" id="total-savings">-</div>
+            <div class="metric-label">For period 2024-2025</div>
+        </div>
+        
+        <div class="metric-card">
+            <h3>Time Saved</h3>
+            <div class="metric-value" id="business-days-saved">-</div>
+            <div class="metric-label">Business days saved for devs and data scientists</div>
+        </div>
+    </div>
 
-        <div class="metrics-grid">
-            
-
-            <div class="metric-card">
-                <h3>📊 Completion Rate</h3>
-                <div class="before-after">
-                    <div class="metric-item before">
-                        <div class="metric-label">Before Auto-Deploy</div>
-                        <div class="metric-value" id="before-completion">-</div>
-                        <div class="metric-label">Success Rate</div>
-                    </div>
-                    <div class="metric-item after">
-                        <div class="metric-label">After Auto-Deploy</div>
-                        <div class="metric-value" id="after-completion">-</div>
-                        <div class="metric-label">Success Rate</div>
-                    </div>
+    <h2>Operational Metrics</h2>
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <h3>Completion Rate</h3>
+            <div class="before-after">
+                <div class="before">
+                    <div class="metric-label">Before Auto-Deploy</div>
+                    <div class="metric-value" style="font-size: 24pt;" id="before-completion">-</div>
+                    <div class="metric-label">Success Rate</div>
                 </div>
-            </div>
-            
-            <div class="metric-card">
-                <h3>⏱️ Average Deployment Time</h3>
-                <div class="before-after">
-                    <div class="metric-item before">
-                        <div class="metric-label">Before Auto-Deploy</div>
-                        <div class="metric-value" id="before-time">-</div>
-                        <div class="metric-label">Days</div>
-                    </div>
-                    <div class="metric-item after">
-                        <div class="metric-label">After Auto-Deploy</div>
-                        <div class="metric-value" id="after-time">-</div>
-                        <div class="metric-label">Days</div>
-                    </div>
+                <div class="after">
+                    <div class="metric-label">After Auto-Deploy</div>
+                    <div class="metric-value" style="font-size: 24pt;" id="after-completion">-</div>
+                    <div class="metric-label">Success Rate</div>
                 </div>
-            </div>
-            
-            <div class="metric-card improvement-card">
-                <h3>🎯 Completion Rate Improvement</h3>
-                <div class="improvement-value" id="completion-improvement">-</div>
-                <div class="improvement-desc">More Reliable</div>
-            </div>
-            
-            <div class="metric-card improvement-card">
-                <h3>⚡ Speed Improvement</h3>
-                <div class="improvement-value" id="speed-improvement">-</div>
-                <div class="improvement-desc">Faster Deployments</div>
             </div>
         </div>
         
-        
-        
-        <div class="charts-grid">
-            <div class="chart-card">
-                <h3>📈 Deployments success rates</h3>
-                <canvas id="completionChart"></canvas>
+        <div class="metric-card">
+            <h3>Average Deployment Time</h3>
+            <div class="before-after">
+                <div class="before">
+                    <div class="metric-label">Before Auto-Deploy</div>
+                    <div class="metric-value" style="font-size: 24pt;" id="before-time">-</div>
+                    <div class="metric-label">Days</div>
+                </div>
+                <div class="after">
+                    <div class="metric-label">After Auto-Deploy</div>
+                    <div class="metric-value" style="font-size: 24pt;" id="after-time">-</div>
+                    <div class="metric-label">Days</div>
+                </div>
             </div>
-            
-            <div class="chart-card">
-                <h3>🏃‍♂️ Monthly Deployment Time Trend</h3>
-                <canvas id="deploymentChart"></canvas>
-            </div>
-            
-            <div class="chart-card">
-                <h3>🧪 Test Coverage & E2E Tests Trend</h3>
-                <canvas id="testChart"></canvas>
-            </div>
-            
-            <div class="chart-card">
-                <h3>💰 AWS EC2 Costs for feature environments</h3>
-                <canvas id="ec2Chart"></canvas>
-            </div>
-            
-            <div class="chart-card">
-                <h3>🌿 Feature Environments Created Over Time</h3>
-                <canvas id="featureEnvsChart"></canvas>
-            </div>
-            
-            <div class="chart-card">
-                <h3>🔧 Data Pipeline Failures Over Time</h3>
-                <canvas id="pipelineReliabilityChart"></canvas>
-            </div>
-            
         </div>
         
-        <div class="summary">
-            <h2>🎉 Key Takeaways</h2>
-            <p>
-                The auto-deploy enablement on <strong>December 12, 2023</strong> resulted in a 
-                <span class="highlight">15.3x more reliable deployments</span> in deployment completion rates and 
-                <span class="highlight">57.3% faster deployments</span> in deployment times. 
-                This transformation moved the team from manual, error-prone deployments to 
-                <strong>automated, reliable, and fast</strong> continuous deployment.
-            </p>
-            <br>
-            <p>
-                The introduction of <strong>feature environments in September 2023</strong> was a mandatory step 
-                to move safely to continuous deployment, providing isolated testing environments that enabled 
-                confident automated deployments without production risks.
-            </p>
+        <div class="metric-card">
+            <h3>Completion Rate Improvement</h3>
+            <div class="metric-value" id="completion-improvement">-</div>
+            <div class="metric-label">More Reliable</div>
+        </div>
+        
+        <div class="metric-card">
+            <h3>Speed Improvement</h3>
+            <div class="metric-value" id="speed-improvement">-</div>
+            <div class="metric-label">Faster Deployments</div>
+        </div>
+    </div>
+
+    <h2>Detailed Analysis</h2>
+    
+    <div class="chart-container">
+        <h3>Deployments Success Rates</h3>
+        <div class="chart-wrapper">
+            <canvas id="completionChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="chart-container">
+        <h3>Monthly Deployment Time Trend</h3>
+        <div class="chart-wrapper">
+            <canvas id="deploymentChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="chart-container">
+        <h3>Test Coverage & E2E Tests Trend</h3>
+        <div class="chart-wrapper">
+            <canvas id="testChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="chart-container">
+        <h3>AWS EC2 Costs for Feature Environments</h3>
+        <div class="chart-wrapper">
+            <canvas id="ec2Chart"></canvas>
+        </div>
+    </div>
+    
+    <div class="chart-container">
+        <h3>Feature Environments Created Over Time</h3>
+        <div class="chart-wrapper">
+            <canvas id="featureEnvsChart"></canvas>
+        </div>
+    </div>
+    
+    <div class="chart-container">
+        <h3>Data Pipeline Failures Over Time</h3>
+        <div class="chart-wrapper">
+            <canvas id="pipelineReliabilityChart"></canvas>
+        </div>
+    </div>
+
+    <div class="summary">
+        <h2>Key Takeaways</h2>
+        <p>
+            The auto-deploy enablement on <strong>December 12, 2023</strong> resulted in <strong>15.3x more reliable deployments</strong> and <strong>57.3% faster deployments</strong>. This transformation moved the team from manual, error-prone deployments to automated, reliable, and fast continuous deployment.
+        </p>
+        <p style="margin-top: 12pt;">
+            The introduction of <strong>feature environments in September 2023</strong> was a mandatory step to move safely to continuous deployment, providing isolated testing environments that enabled confident automated deployments without production risks.
+        </p>
+        <p style="margin-top: 12pt;">
+            Additionally, DevOps best practices adoption stabilized the data pipelines failure rate on production, reducing failures by approximately <strong>50-60%</strong> compared to pre-automation periods.
+        </p>
+    </div>
+
+    <div class="author-info">
+        <p><strong>Antoine ROUGEOT</strong> - Tony Engineering OÜ<br>
+        Work available on GitHub: <a href="https://github.com/tony-engineering/devops-impact-report">github.com/tony-engineering/devops-impact-report</a><br>
+        LinkedIn: <a href="https://www.linkedin.com/in/antoinerougeot/">linkedin.com/in/antoinerougeot</a></p>
+    </div>
             <br>
             <p>
                 Additionally, DevOps best practices adoption stabilized the data pipelines failure rate on production, 

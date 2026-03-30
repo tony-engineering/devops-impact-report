@@ -8,7 +8,7 @@ This transformation was conducted following **[12-Factor App methodology](https:
 
 ## The Dashboard
 
-# ➡️ **[VIEW LIVE DASHBOARD](https://tony-engineering-ou.github.io/devops-impact-report/autodeploy_impact_dashboard.html)** ⚡
+# ➡️ **[VIEW LIVE DASHBOARD](https://impact-dashboard.tony-engineering.com/)** ⚡
 
 📅 **[Schedule a consultation](https://calendly.com/tony-engineering/prise-connaissance)** - Let's discuss your DevOps and DataOps transformation
 
